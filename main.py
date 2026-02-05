@@ -177,16 +177,20 @@ def analyze_god_mode(symbol):
         return "SKIP", 0, ""
 
 def get_all_idx_stocks():
-    print("🔄 Mengambil daftar 500+ saham dari database publik...")
+    print("📂 Memuat daftar saham dari file lokal...")
     try:
-        url = "https://raw.githubusercontent.com/manbeee/indonesia-stock-list/main/stock_list.csv"
-        df = pd.read_csv(url)
-        tickers = df['code'].tolist() 
+        # Nama file harus persis sama: saham_indonesia.txt
+        with open("saham.txt", "r") as f:
+            content = f.read()
+            # Membersihkan spasi dan memisahkan koma
+            tickers = [t.strip().upper() for t in content.replace("\n", ",").split(",") if t.strip()]
+        
+        print(f"✅ Berhasil memuat {len(tickers)} saham dari file lokal.")
         return tickers
-    except Exception as e:
-        print(f"⚠️ Gagal ambil list otomatis, menggunakan list backup: {e}")
-        return ["ASII", "BBRI", "TLKM", "GOTO", "UNVR", "BBCA", "BMRI", "ADRO"]
-
+    except FileNotFoundError:
+        print("⚠️ File saham_indonesia.txt tidak ditemukan!")
+        return ["ASII", "BBRI", "TLKM", "GOTO"]
+    
 async def market_scanner(stock_list):
     print(f"🚀 Scanner aktif memantau {len(stock_list)} saham...")
     while True:
